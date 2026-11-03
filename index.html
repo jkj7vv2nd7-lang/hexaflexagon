@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ヘキサフレキサゴン工房</title>
+<meta name="description" content="折って、めくると絵が変わる不思議な六角形「ヘキサフレキサゴン」の型紙を作る工房。トリヘキサ（顔3つ）とヘキサヘキサ（顔6つ）、写真も使えます。">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="フレキサゴン工房">
+<style>
+  :root{
+    --ink:#3a3226; --paper:#fffaf0; --card:#ffffff; --line:#e4d9c4;
+    --accent:#e07b39; --accent2:#3f7fbf; --good:#4a9e57;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.65;
+    padding:0 12px 48px;
+  }
+  .wrap{ max-width:760px; margin:0 auto; }
+  header{ text-align:center; padding:22px 4px 6px; }
+  header h1{ font-size:1.72rem; margin:0 0 4px; letter-spacing:.04em; }
+  header .sub{ color:#7a6c52; font-size:.95rem; margin:0; }
+  header .hexmark{ font-size:2rem; }
+  #bootwarn{
+    display:none; background:#fdeeda; border:1.5px solid var(--accent); border-radius:12px;
+    padding:12px 14px; margin:14px 0; font-size:.92rem;
+  }
+  .tabs{ display:flex; gap:8px; margin:18px 0 4px; }
+  .tabs button{
+    flex:1; padding:12px 6px; font-size:1.02rem; font-weight:700; border-radius:14px;
+    border:2px solid var(--line); background:#fff; color:var(--ink); cursor:pointer;
+    font-family:inherit;
+  }
+  .tabs button.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tabs button small{ display:block; font-weight:400; font-size:.78rem; opacity:.85; }
+  section.card{
+    background:var(--card); border:1.5px solid var(--line); border-radius:18px;
+    padding:16px 16px 18px; margin:16px 0;
+    box-shadow:0 2px 8px rgba(90,70,30,.06);
+  }
+  section.card h2{ font-size:1.18rem; margin:2px 0 8px; }
+  section.card h2 .no{
+    display:inline-block; background:var(--accent2); color:#fff; border-radius:50%;
+    width:1.55em; height:1.55em; line-height:1.55em; text-align:center; font-size:.92em; margin-right:.35em;
+  }
+  .note{ color:#7a6c52; font-size:.88rem; }
+  .facegrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:12px; }
+  .facebox{ border:1.5px solid var(--line); border-radius:14px; padding:10px; background:#fffdf6; }
+  .facebox h3{ margin:0 0 6px; font-size:1rem; }
+  .facebox h3 .badge{
+    display:inline-block; color:#fff; border-radius:8px; padding:0 .5em; margin-right:.4em; font-size:.9em;
+  }
+  .facebox canvas{ width:100%; height:auto; display:block; }
+  .facebox label{ display:block; font-size:.82rem; color:#7a6c52; margin-top:8px; }
+  .facebox select{
+    width:100%; padding:8px; font-size:.95rem; border-radius:9px; border:1.5px solid var(--line);
+    background:#fff; font-family:inherit; color:var(--ink);
+  }
+  .facebox .photobtn{
+    display:inline-block; margin-top:8px; padding:8px 12px; border-radius:9px; cursor:pointer;
+    background:#eef4fb; border:1.5px solid #bcd2ea; color:#2c5a8a; font-size:.88rem; font-weight:700;
+  }
+  .facebox .photobtn input{ display:none; }
+  .facebox .clearbtn{
+    margin-left:6px; padding:8px 10px; border-radius:9px; border:1.5px solid var(--line);
+    background:#fff; color:#7a6c52; font-size:.85rem; cursor:pointer; font-family:inherit;
+  }
+  .simbox{ text-align:center; }
+  .simbox canvas{ width:min(92vw,430px); height:auto; }
+  .simbtns{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+  button.act{
+    padding:12px 20px; font-size:1.02rem; font-weight:700; border-radius:12px; border:none;
+    background:var(--accent); color:#fff; cursor:pointer; font-family:inherit;
+    box-shadow:0 2px 5px rgba(160,90,30,.3);
+  }
+  button.act.sub{ background:#fff; color:var(--ink); border:2px solid var(--line); box-shadow:none; }
+  button.act.blue{ background:var(--accent2); box-shadow:0 2px 5px rgba(40,80,140,.3); }
+  .facenow{ font-size:1.05rem; font-weight:700; margin-top:8px; }
+  table.tour{ width:100%; border-collapse:collapse; font-size:.9rem; margin-top:10px; }
+  table.tour th, table.tour td{ border:1px solid var(--line); padding:6px 8px; text-align:center; }
+  table.tour th{ background:#fdf3df; }
+  table.tour tr.cur td{ background:#fff3d6; font-weight:700; }
+  .tmplwrap{ text-align:center; }
+  .tmplwrap canvas{ width:100%; height:auto; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  .manual h3{ margin:16px 0 6px; font-size:1.05rem; color:#8a5a20; }
+  .manual h3:first-child{ margin-top:4px; }
+  .manual ol, .manual ul{ margin:6px 0 6px 1.2em; padding:0; }
+  .manual li{ margin:4px 0; }
+  .column{
+    background:#f4f8fd; border:1.5px solid #c9dcee; border-radius:14px; padding:12px 14px; margin-top:14px;
+  }
+  .column h3{ color:#2c5a8a; margin-top:0; }
+  footer{ text-align:center; color:#9a8a6a; font-size:.82rem; margin-top:26px; }
+  .kbd{ background:#f3ead6; border-radius:6px; padding:0 .4em; font-weight:700; }
+</style>
+<script>
+  // 起動ガード：本体スクリプトが動かなかったときに白画面で終わらせない
+  window.__flexBootTimer = setTimeout(function(){
+    var el = document.getElementById('bootwarn');
+    if (el && !window.__flexBooted) el.style.display = 'block';
+  }, 4000);
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hexmark">⬡</div>
+    <h1>ヘキサフレキサゴン工房</h1>
+    <p class="sub">折って、めくると、あら不思議。絵が変わる六角形の型紙工房です。</p>
+  </header>
+
+  <div id="bootwarn">アプリの読み込みに失敗したようです。お手数ですが、ページを再読み込みしてみてください。それでも直らない場合は、ブラウザを変えてお試しください。</div>
+
+  <div class="tabs" role="tablist">
+    <button id="tab-tri" class="on" type="button">トリヘキサ<small>顔は3つ・三角形10枚の帯</small></button>
+    <button id="tab-hexa" type="button">ヘキサヘキサ<small>顔は6つ・三角形19枚の帯</small></button>
+  </div>
+
+  <section class="card">
+    <h2><span class="no">1</span>顔の絵柄を決める</h2>
+    <p class="note">顔ごとに、内蔵の絵柄か、お手持ちの写真・イラストを選べます。写真はこの端末の中だけで処理され、外に送信されることはありません。選んだ絵は、折り上がったときに1枚の六角形の絵としてそろうよう、工房が自動で帯へ配置します。</p>
+    <div class="facegrid" id="facegrid"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="no">2</span>めくりシミュレーター</h2>
+    <p class="note">作る前に、めくったときの顔の変わり方を試せます。「めくる」で次の状態へ、「裏返す」でいまの状態の裏の顔が見られます。下の表は「どの顔とどの顔が表裏の組か」「表の顔が帯のどの三角形でできているか」の対応表です。</p>
+    <div class="simbox">
+      <canvas id="simcanvas" width="520" height="520"></canvas>
+      <div class="facenow" id="facenow"></div>
+      <div class="simbtns">
+        <button class="act" id="btn-flex" type="button">めくる</button>
+        <button class="act sub" id="btn-flip" type="button">裏返す</button>
+        <button class="act sub" id="btn-reset" type="button">最初にもどす</button>
+      </div>
+    </div>
+    <div id="tourtable"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="no">3</span>型紙を印刷する</h2>
+    <p class="note" id="tmplnote"></p>
+    <div class="tmplwrap">
+      <canvas id="tmplcanvas" width="3508" height="2480"></canvas>
+      <div class="simbtns">
+        <button class="act blue" id="btn-download" type="button">型紙（A4・300dpi）をダウンロード</button>
+      </div>
+      <p class="note">ダウンロードした画像を、A4判・横向き・「実際のサイズ（100%）」で印刷してください。型紙の右上にある黒い線が、実物でちょうど5cmになっていれば正しい大きさです。帯は厚手の紙（画用紙など）がおすすめです。</p>
+    </div>
+  </section>
+
+  <section class="card manual">
+    <h2><span class="no">4</span>説明書</h2>
+    <div id="manual-body"></div>
+    <div class="column">
+      <h3>コラム ― フレキサゴンの発見とガードナー</h3>
+      <p>1939年、アメリカのプリンストン大学。イギリスからの留学生アーサー・ストーンは、アメリカのノートに合わせて買った紙がイギリスのフォルダーに入らず、はみ出した部分を切り取って帯にしていました。その帯をひねったり折ったりして遊ぶうちに、めくるたびに新しい面が現れる不思議な六角形を発見します。面白さに夢中になったストーンは、仲間と「フレキサゴン委員会」を作って研究を始めました。委員には、後に物理学者になるリチャード・ファインマン、数学者になるジョン・テューキーらがいたといいます。</p>
+      <p>この仕組みを世に広めたのが、数学パズルの名手マーティン・ガードナーです。1956年に『サイエンティフィック・アメリカン』誌で紹介し、彼の連載「数学ゲーム」の記念すべき第1回にもなりました。日本では『おもしろい数学パズル』（現代教養文庫）などで紹介され、たくさんの人を楽しませてきました。紙の帯が持つ、こんな奥深い仕組み――ぜひ手で触って味わってみてください。</p>
+    </div>
+  </section>
+
+  <footer>
+    ヘキサフレキサゴン工房 ― 写真は端末内でのみ処理されます（外部送信なし）<br>
+    型紙の番号は、M.ガードナー紹介の古典的な構成にもとづきます。
+  </footer>
+</div>
+<noscript><p style="text-align:center">このアプリはJavaScriptで動きます。ブラウザの設定でJavaScriptを有効にしてください。</p></noscript>
+<script>
+'use strict';
+/* ヘキサフレキサゴン工房 本体
+   面対応表（FLEXDATA）は、折りシミュレーションで検証済みの標準構成
+   （トリ：Morgan方式の番号配置／ヘキサ：ガードナー方式の番号配置）から生成した。
+   各エントリ {piece, side, cv, map} の map は「帯の材料座標→組み立て後の格子座標」
+   の整数アフィン変換 [a,b,c,d,tx,ty]。 */
+const FLEXDATA = {"tri":{"n":10,"labels":{"front":[3,1,1,2,2,3,3,1,1,2],"back":["G",2,3,3,1,1,2,2,3,"G"]},"faces":{"1":[{"piece":8,"side":"F","cv":0,"map":[-1,-1,1,0,5,-4]},{"piece":7,"side":"F","cv":0,"map":[-1,-1,1,0,5,-4]},{"piece":5,"side":"B","cv":1,"map":[0,-1,-1,0,2,2]},{"piece":4,"side":"B","cv":2,"map":[0,-1,-1,0,2,2]},{"piece":2,"side":"F","cv":0,"map":[1,0,0,1,0,0]},{"piece":1,"side":"F","cv":0,"map":[1,0,0,1,0,0]}],"2":[{"piece":9,"side":"F","cv":2,"map":[1,1,0,-1,-5,1]},{"piece":7,"side":"B","cv":0,"map":[-1,-1,1,0,5,-4]},{"piece":6,"side":"B","cv":1,"map":[-1,-1,1,0,5,-4]},{"piece":4,"side":"F","cv":2,"map":[0,-1,-1,0,2,2]},{"piece":3,"side":"F","cv":2,"map":[0,-1,-1,0,2,2]},{"piece":1,"side":"B","cv":0,"map":[1,0,0,1,0,0]}],"3":[{"piece":0,"side":"F","cv":0,"map":[1,0,0,1,0,0]},{"piece":8,"side":"B","cv":2,"map":[1,1,0,-1,-5,1]},{"piece":6,"side":"F","cv":0,"map":[-1,-1,1,0,3,-3]},{"piece":5,"side":"F","cv":0,"map":[-1,-1,1,0,3,-3]},{"piece":3,"side":"B","cv":1,"map":[0,-1,-1,0,1,1]},{"piece":2,"side":"B","cv":2,"map":[0,-1,-1,0,1,1]}]},"tour":[{"state":"A","top":1,"bottom":2,"topPieces":[8,7,5,4,2,1],"bottomPieces":[9,7,6,4,3,1]},{"state":"B","top":3,"bottom":1,"topPieces":[0,8,6,5,3,2],"bottomPieces":[1,8,7,5,4,2]},{"state":"C","top":3,"bottom":2,"topPieces":[0,2,3,5,6,8],"bottomPieces":[9,1,3,4,6,7]}],"name":"トリヘキサフレキサゴン"},"hexa":{"n":19,"labels":{"front":[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,"G"],"back":["G",4,4,5,5,6,6,4,4,5,5,6,6,4,4,5,5,6,6]},"faces":{"1":[{"piece":0,"side":"F","cv":0,"map":[1,0,0,1,0,0]},{"piece":3,"side":"F","cv":1,"map":[-1,-1,1,0,2,-1]},{"piece":6,"side":"F","cv":0,"map":[-1,-1,1,0,3,-3]},{"piece":9,"side":"F","cv":1,"map":[0,1,-1,-1,-1,5]},{"piece":12,"side":"F","cv":0,"map":[0,1,-1,-1,0,6]},{"piece":15,"side":"F","cv":1,"map":[1,0,0,1,-7,-1]}],"2":[{"piece":1,"side":"F","cv":2,"map":[0,-1,-1,0,1,1]},{"piece":4,"side":"F","cv":1,"map":[0,-1,-1,0,0,3]},{"piece":7,"side":"F","cv":2,"map":[1,1,0,-1,-5,1]},{"piece":10,"side":"F","cv":1,"map":[1,1,0,-1,-6,0]},{"piece":13,"side":"F","cv":2,"map":[-1,0,1,1,7,-8]},{"piece":16,"side":"F","cv":1,"map":[-1,0,1,1,9,-9]}],"3":[{"piece":17,"side":"F","cv":1,"map":[-1,0,1,1,9,-9]},{"piece":14,"side":"F","cv":0,"map":[0,-1,-1,0,1,7]},{"piece":11,"side":"F","cv":1,"map":[0,-1,-1,0,2,5]},{"piece":8,"side":"F","cv":0,"map":[1,1,0,-1,-3,0]},{"piece":5,"side":"F","cv":1,"map":[1,1,0,-1,-2,1]},{"piece":2,"side":"F","cv":0,"map":[-1,0,1,1,2,-1]}],"4":[{"piece":14,"side":"B","cv":0,"map":[-1,-1,1,0,8,-7]},{"piece":13,"side":"B","cv":0,"map":[-1,-1,1,0,8,-7]},{"piece":8,"side":"B","cv":0,"map":[0,1,-1,-1,1,4]},{"piece":7,"side":"B","cv":0,"map":[0,1,-1,-1,1,4]},{"piece":2,"side":"B","cv":0,"map":[1,0,0,1,0,0]},{"piece":1,"side":"B","cv":0,"map":[1,0,0,1,0,0]}],"5":[{"piece":9,"side":"B","cv":2,"map":[1,1,0,-1,-5,1]},{"piece":16,"side":"B","cv":2,"map":[-1,0,1,1,9,-9]},{"piece":15,"side":"B","cv":2,"map":[-1,0,1,1,9,-9]},{"piece":4,"side":"B","cv":2,"map":[0,-1,-1,0,2,2]},{"piece":3,"side":"B","cv":2,"map":[0,-1,-1,0,2,2]},{"piece":10,"side":"B","cv":2,"map":[1,1,0,-1,-5,1]}],"6":[{"piece":18,"side":"B","cv":2,"map":[1,0,0,1,-9,0]},{"piece":11,"side":"B","cv":2,"map":[-1,-1,1,0,7,-5]},{"piece":12,"side":"B","cv":2,"map":[-1,-1,1,0,7,-5]},{"piece":5,"side":"B","cv":2,"map":[0,1,-1,-1,-1,5]},{"piece":6,"side":"B","cv":2,"map":[0,1,-1,-1,-1,5]},{"piece":17,"side":"B","cv":2,"map":[1,0,0,1,-9,0]}]},"tour":[{"top":1,"bottom":2,"topPieces":[0,3,6,9,12,15],"bottomPieces":[1,4,7,10,13,16]},{"top":1,"bottom":3,"topPieces":[0,15,12,9,6,3],"bottomPieces":[17,14,11,8,5,2]},{"top":2,"bottom":3,"topPieces":[16,1,4,7,10,13],"bottomPieces":[17,2,5,8,11,14]},{"top":2,"bottom":4,"topPieces":[16,13,10,7,4,1],"bottomPieces":[14,13,8,7,2,1]},{"top":5,"bottom":4,"topPieces":[9,16,15,4,3,10],"bottomPieces":[8,7,14,13,2,1]},{"top":5,"bottom":6,"topPieces":[9,10,3,4,15,16],"bottomPieces":[18,11,12,5,6,17]},{"top":3,"bottom":6,"topPieces":[2,17,14,11,8,5],"bottomPieces":[18,17,12,11,6,5]},{"top":4,"bottom":3,"topPieces":[1,14,13,8,7,2],"bottomPieces":[17,14,11,8,5,2]},{"top":4,"bottom":6,"topPieces":[1,8,7,14,13,2],"bottomPieces":[18,17,6,5,12,11]},{"top":1,"bottom":6,"topPieces":[0,3,6,9,12,15],"bottomPieces":[18,5,6,11,12,17]},{"top":1,"bottom":5,"topPieces":[0,15,12,9,6,3],"bottomPieces":[16,15,10,9,4,3]},{"top":5,"bottom":2,"topPieces":[3,16,15,10,9,4],"bottomPieces":[1,16,13,10,7,4]}],"name":"ヘキサヘキサフレキサゴン"}};
+
+// 顔が「裏から見た状態」に由来するか（その場合、表示は左右反転したフレームになる）
+const FACE_FROM_BOTTOM = { tri: { 2: true }, hexa: { 2: true, 3: true, 4: true, 6: true } };
+const FACE_COLORS = { 1: '#d9534f', 2: '#3f7fbf', 3: '#4a9e57', 4: '#e07b39', 5: '#8a5fc0', 6: '#c9a227' };
+const SQ3 = Math.sqrt(3) / 2;
+
+/* ---------- 格子幾何 ---------- */
+function stripTri(i) {
+  const c = i >> 1;
+  return (i % 2 === 0) ? [[c, 0], [c + 1, 0], [c, 1]] : [[c + 1, 0], [c, 1], [c + 1, 1]];
+}
+function xyOf(p) { return [p[0] + p[1] / 2, p[1] * SQ3]; }
+function applyMap(map, p) {
+  return [map[0] * p[0] + map[1] * p[1] + map[4], map[2] * p[0] + map[3] * p[1] + map[5]];
+}
+// 顔フレーム：中心（六角形の中心の表示座標）と倍率
+const FACE_PX = 720, FACE_SCALE = 322;
+function faceFrame(variant, face) {
+  const tab = FLEXDATA[variant].faces[face];
+  const e0 = tab[0];
+  const centerLat = applyMap(e0.map, stripTri(e0.piece)[e0.cv]);
+  const center = xyOf(centerLat);
+  return { tab, center, bottom: !!FACE_FROM_BOTTOM[variant][face] };
+}
+function facePixel(frame, worldLat) {
+  const q = xyOf(worldLat);
+  let ux = q[0] - frame.center[0], uy = q[1] - frame.center[1];
+  if (frame.bottom) ux = -ux;
+  return [FACE_PX / 2 + FACE_SCALE * ux, FACE_PX / 2 - FACE_SCALE * uy];
+}
+// 顔の六角形の頂点（表示ピクセル）とセクター三角形群
+function faceSectors(variant, face) {
+  const frame = faceFrame(variant, face);
+  return frame.tab.map(e => {
+    const pts = stripTri(e.piece).map(p => facePixel(frame, applyMap(e.map, p)));
+    return { piece: e.piece, side: e.side, pts };
+  });
+}
+function hexOutline(variant, face) {
+  const secs = faceSectors(variant, face);
+  const c = [FACE_PX / 2, FACE_PX / 2];
+  const verts = [];
+  secs.forEach(s => {
+    s.pts.forEach(p => { if (Math.hypot(p[0] - c[0], p[1] - c[1]) > 40) verts.push(p); });
+  });
+  verts.sort((a, b) => Math.atan2(a[1] - c[1], a[0] - c[0]) - Math.atan2(b[1] - c[1], b[0] - c[0]));
+  return verts;
+}
+// (piece, side) → {face, entry} の逆引き
+function sideToFace(variant) {
+  const m = {};
+  const faces = FLEXDATA[variant].faces;
+  for (const f of Object.keys(faces)) {
+    faces[f].forEach(e => { m[e.piece + e.side] = { face: +f, entry: e }; });
+  }
+  return m;
+}
+
+/* ---------- 顔キャンバス（絵柄） ---------- */
+const PALETTES = [
+  { name: 'あか・オレンジ', bg: '#fff3e2', c1: '#d9534f', c2: '#f0a13c', c3: '#7a2d1e' },
+  { name: 'あお・みずいろ', bg: '#e8f3fc', c1: '#3f7fbf', c2: '#62b6d9', c3: '#1d3f63' },
+  { name: 'みどり・きみどり', bg: '#edf7e8', c1: '#4a9e57', c2: '#a5c94f', c3: '#274d1f' },
+  { name: 'むらさき・ピンク', bg: '#f6ecfa', c1: '#8a5fc0', c2: '#e58fc0', c3: '#472a63' },
+  { name: 'ちゃいろ・クリーム', bg: '#faf1de', c1: '#a5713a', c2: '#d9b36a', c3: '#54350f' },
+  { name: 'あいいろ・あか', bg: '#eceef7', c1: '#3a4a9e', c2: '#d9534f', c3: '#1d2447' }
+];
+const DESIGNS = [
+  { name: '同心円', draw: drawRings },
+  { name: '花びら', draw: drawPetals },
+  { name: '星', draw: drawStar },
+  { name: 'うずまき', draw: drawSpiral },
+  { name: '市松', draw: drawChecker },
+  { name: '三角タイル', draw: drawTiles }
+];
+function withCenter(ctx, fn) {
+  ctx.save(); ctx.translate(FACE_PX / 2, FACE_PX / 2); fn(); ctx.restore();
+}
+function drawRings(ctx, P) {
+  ctx.fillStyle = P.bg; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+  withCenter(ctx, () => {
+    const cols = [P.c1, P.c2, P.c1, P.c2, P.c1, P.c2];
+    for (let i = 0; i < 6; i++) {
+      ctx.beginPath(); ctx.fillStyle = cols[i];
+      ctx.arc(0, 0, 330 - i * 52, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.beginPath(); ctx.fillStyle = P.c3; ctx.arc(0, 0, 26, 0, Math.PI * 2); ctx.fill();
+  });
+}
+function drawPetals(ctx, P) {
+  ctx.fillStyle = P.bg; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+  withCenter(ctx, () => {
+    for (let k = 0; k < 6; k++) {
+      ctx.save(); ctx.rotate(k * Math.PI / 3);
+      ctx.beginPath(); ctx.fillStyle = (k % 2 === 0) ? P.c1 : P.c2;
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(88, -70, 108, -190, 0, -318);
+      ctx.bezierCurveTo(-108, -190, -88, -70, 0, 0);
+      ctx.fill(); ctx.restore();
+    }
+    ctx.beginPath(); ctx.fillStyle = P.c3; ctx.arc(0, 0, 44, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle = P.bg; ctx.arc(0, 0, 22, 0, Math.PI * 2); ctx.fill();
+  });
+}
+function drawStar(ctx, P) {
+  ctx.fillStyle = P.bg; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+  withCenter(ctx, () => {
+    ctx.beginPath(); ctx.fillStyle = P.c1;
+    for (let i = 0; i < 24; i++) {
+      const r = (i % 2 === 0) ? 322 : 148;
+      const a = -Math.PI / 2 + i * Math.PI / 12;
+      const x = r * Math.cos(a), y = r * Math.sin(a);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle = P.c2;
+    for (let k = 0; k < 6; k++) {
+      const a = -Math.PI / 2 + k * Math.PI / 3;
+      const x = 128 * Math.cos(a), y = 128 * Math.sin(a);
+      if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle = P.c3; ctx.arc(0, 0, 46, 0, Math.PI * 2); ctx.fill();
+  });
+}
+function drawSpiral(ctx, P) {
+  ctx.fillStyle = P.bg; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+  withCenter(ctx, () => {
+    function spiral(color, lw, phase) {
+      ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineCap = 'round';
+      const turns = 3.4, steps = 220;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps, a = phase + t * turns * Math.PI * 2, r = 16 + t * 296;
+        const x = r * Math.cos(a), y = r * Math.sin(a);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    spiral(P.c1, 40, 0);
+    spiral(P.c2, 13, 0.55);
+    ctx.beginPath(); ctx.fillStyle = P.c3; ctx.arc(0, 0, 24, 0, Math.PI * 2); ctx.fill();
+  });
+}
+function drawChecker(ctx, P) {
+  ctx.fillStyle = P.bg; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+  withCenter(ctx, () => {
+    const rings = [[46, 118], [118, 190], [190, 262], [262, 334]];
+    rings.forEach(([r0, r1], ri) => {
+      for (let k = 0; k < 6; k++) {
+        if ((k + ri) % 2 !== 0) continue;
+        const a0 = -Math.PI / 2 - Math.PI / 6 + k * Math.PI / 3;
+        const a1 = a0 + Math.PI / 3;
+        ctx.beginPath(); ctx.fillStyle = (ri % 2 === 0) ? P.c1 : P.c2;
+        ctx.arc(0, 0, r1, a0, a1); ctx.arc(0, 0, r0, a1, a0, true);
+        ctx.closePath(); ctx.fill();
+      }
+    });
+    ctx.beginPath(); ctx.fillStyle = P.c3; ctx.arc(0, 0, 46, 0, Math.PI * 2); ctx.fill();
+  });
+}
+function drawTiles(ctx, P) {
+  ctx.fillStyle = P.bg; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+  const s = 120, h = s * SQ3, cols = [P.c1, P.c2, P.c3];
+  let n = 0;
+  for (let row = -1; row < 8; row++) {
+    for (let col = -1; col < 8; col++) {
+      const x0 = col * s + (row % 2 ? s / 2 : 0), y0 = row * h;
+      ctx.beginPath(); ctx.fillStyle = cols[n++ % 3];
+      ctx.moveTo(x0, y0); ctx.lineTo(x0 + s, y0); ctx.lineTo(x0 + s / 2, y0 + h); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.fillStyle = cols[n++ % 3];
+      ctx.moveTo(x0 + s, y0); ctx.lineTo(x0 + s * 1.5, y0 + h); ctx.lineTo(x0 + s / 2, y0 + h); ctx.closePath(); ctx.fill();
+    }
+  }
+  withCenter(ctx, () => {
+    ctx.beginPath(); ctx.fillStyle = P.bg; ctx.arc(0, 0, 40, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle = P.c1; ctx.arc(0, 0, 26, 0, Math.PI * 2); ctx.fill();
+  });
+}
+
+/* ---------- 状態管理 ---------- */
+const state = {
+  variant: 'tri',
+  faces: {},       // variant -> { faceNum: {design, palette, photo:HTMLImageElement|null, canvas} }
+  sim: { tourIdx: 0, showBottom: false, anim: 0, animFrom: null, animTo: null },
+  tmplDirty: true
+};
+function defaultFaceCfg(variant, face) {
+  return { design: (face - 1) % DESIGNS.length, palette: (face - 1) % PALETTES.length, photo: null, canvas: null };
+}
+function faceCfg(variant, face) {
+  if (!state.faces[variant]) state.faces[variant] = {};
+  if (!state.faces[variant][face]) state.faces[variant][face] = defaultFaceCfg(variant, face);
+  return state.faces[variant][face];
+}
+function renderFaceCanvas(variant, face) {
+  const cfg = faceCfg(variant, face);
+  if (!cfg.canvas) { cfg.canvas = document.createElement('canvas'); cfg.canvas.width = cfg.canvas.height = FACE_PX; }
+  const ctx = cfg.canvas.getContext('2d');
+  if (cfg.photo) {
+    const img = cfg.photo, sc = Math.max(FACE_PX / img.width, FACE_PX / img.height);
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+    ctx.drawImage(img, (FACE_PX - img.width * sc) / 2, (FACE_PX - img.height * sc) / 2, img.width * sc, img.height * sc);
+  } else {
+    DESIGNS[cfg.design].draw(ctx, PALETTES[cfg.palette]);
+  }
+  return cfg.canvas;
+}
+function faceCount(variant) { return variant === 'tri' ? 3 : 6; }
+
+/* ---------- 顔エディタ UI ---------- */
+const $ = id => document.getElementById(id);
+function buildFaceEditors() {
+  const grid = $('facegrid');
+  grid.innerHTML = '';
+  const v = state.variant;
+  for (let f = 1; f <= faceCount(v); f++) {
+    const cfg = faceCfg(v, f);
+    const box = document.createElement('div');
+    box.className = 'facebox';
+    const h = document.createElement('h3');
+    h.innerHTML = '<span class="badge" style="background:' + FACE_COLORS[f] + '">顔' + f + '</span>' +
+      (cfg.photo ? '写真' : DESIGNS[cfg.design].name);
+    box.appendChild(h);
+    const pv = document.createElement('canvas');
+    pv.width = pv.height = 260;
+    box.appendChild(pv);
+    drawFacePreview(pv, v, f);
+    const lab1 = document.createElement('label');
+    lab1.textContent = '絵柄';
+    const sel = document.createElement('select');
+    DESIGNS.forEach((d, i) => {
+      const o = document.createElement('option');
+      o.value = i; o.textContent = d.name; if (i === cfg.design) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', () => {
+      cfg.design = +sel.value; cfg.photo = null;
+      refreshFace(v, f); state.tmplDirty = true; drawTemplateSoon();
+    });
+    lab1.appendChild(sel);
+    box.appendChild(lab1);
+    const lab2 = document.createElement('label');
+    lab2.textContent = '色合い';
+    const sel2 = document.createElement('select');
+    PALETTES.forEach((p, i) => {
+      const o = document.createElement('option');
+      o.value = i; o.textContent = p.name; if (i === cfg.palette) o.selected = true;
+      sel2.appendChild(o);
+    });
+    sel2.addEventListener('change', () => {
+      cfg.palette = +sel2.value; cfg.photo = null;
+      refreshFace(v, f); state.tmplDirty = true; drawTemplateSoon();
+    });
+    lab2.appendChild(sel2);
+    box.appendChild(lab2);
+    const pb = document.createElement('label');
+    pb.className = 'photobtn';
+    pb.textContent = '📷 写真を使う';
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'image/*';
+    fi.addEventListener('change', () => {
+      if (!fi.files || !fi.files[0]) return;
+      const url = URL.createObjectURL(fi.files[0]);
+      const img = new Image();
+      img.onload = () => {
+        cfg.photo = img;
+        refreshFace(v, f); state.tmplDirty = true; drawTemplateSoon();
+      };
+      img.src = url;
+    });
+    pb.appendChild(fi);
+    box.appendChild(pb);
+    const cb = document.createElement('button');
+    cb.className = 'clearbtn'; cb.type = 'button'; cb.textContent = '絵柄にもどす';
+    cb.addEventListener('click', () => {
+      cfg.photo = null;
+      refreshFace(v, f); state.tmplDirty = true; drawTemplateSoon();
+    });
+    box.appendChild(cb);
+    box.dataset.face = f;
+    grid.appendChild(box);
+  }
+}
+function drawFacePreview(canvas, variant, face) {
+  const ctx = canvas.getContext('2d');
+  const fc = renderFaceCanvas(variant, face);
+  const sc = canvas.width / FACE_PX;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.beginPath();
+  hexOutline(variant, face).forEach((p, i) => {
+    if (i === 0) ctx.moveTo(p[0] * sc, p[1] * sc); else ctx.lineTo(p[0] * sc, p[1] * sc);
+  });
+  ctx.closePath(); ctx.clip();
+  ctx.drawImage(fc, 0, 0, canvas.width, canvas.height);
+  ctx.restore();
+  // セクターの区切り
+  ctx.strokeStyle = 'rgba(60,50,40,.35)'; ctx.lineWidth = 1.5;
+  faceSectors(variant, face).forEach(s => {
+    ctx.beginPath();
+    ctx.moveTo(FACE_PX / 2 * sc, FACE_PX / 2 * sc);
+    ctx.lineTo(s.pts[0][0] * sc, s.pts[0][1] * sc);
+    ctx.stroke();
+  });
+  ctx.beginPath();
+  hexOutline(variant, face).forEach((p, i) => {
+    if (i === 0) ctx.moveTo(p[0] * sc, p[1] * sc); else ctx.lineTo(p[0] * sc, p[1] * sc);
+  });
+  ctx.closePath();
+  ctx.strokeStyle = '#3a3226'; ctx.lineWidth = 3; ctx.stroke();
+}
+function refreshFace(variant, face) {
+  renderFaceCanvas(variant, face);
+  const box = document.querySelector('.facebox[data-face="' + face + '"]');
+  if (box && variant === state.variant) {
+    const pv = box.querySelector('canvas');
+    drawFacePreview(pv, variant, face);
+    const cfg = faceCfg(variant, face);
+    box.querySelector('h3').innerHTML = '<span class="badge" style="background:' + FACE_COLORS[face] + '">顔' +
+      face + '</span>' + (cfg.photo ? '写真' : DESIGNS[cfg.design].name);
+  }
+  if (variant === state.variant) drawSim(0);
+}
+
+/* ---------- シミュレーター ---------- */
+const sim = state.sim;
+function currentTourEntry() {
+  return FLEXDATA[state.variant].tour[sim.tourIdx];
+}
+function shownFace() {
+  const t = currentTourEntry();
+  return sim.showBottom ? t.bottom : t.top;
+}
+// openT: 0=閉じた六角形, 1=中心が開いた状態（セクターが外周側へ倒れた姿）
+function drawSim(openT) {
+  const cv = $('simcanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, cx = W / 2, cy = W / 2, sc = W / FACE_PX;
+  ctx.clearRect(0, 0, W, W);
+  const face = shownFace();
+  const fc = renderFaceCanvas(state.variant, face);
+  const secs = faceSectors(state.variant, face);
+  const fcCtx = fc.getContext('2d');
+  // セクターごとに：素材三角形(src) → 表示三角形(dst, openTで中心頂点を外周へ移動)
+  secs.forEach(s => {
+    const dst = s.pts.map(p => [p[0] * sc, p[1] * sc]);
+    // 中心に最も近い頂点が中心頂点
+    let ci = 0, best = 1e18;
+    dst.forEach((p, i) => { const d = Math.hypot(p[0] - cx, p[1] - cy); if (d < best) { best = d; ci = i; } });
+    const others = dst.filter((_, i) => i !== ci);
+    const mid = [(others[0][0] + others[1][0]) / 2, (others[0][1] + others[1][1]) / 2];
+    const openPt = [others[0][0] + others[1][0] - dst[ci][0], others[0][1] + others[1][1] - dst[ci][1]];
+    const cur = [dst[ci][0] + (openPt[0] - dst[ci][0]) * openT, dst[ci][1] + (openPt[1] - dst[ci][1]) * openT];
+    const dstTri = dst.slice(); dstTri[ci] = cur;
+    const srcTri = s.pts;
+    drawTriImage(ctx, fc, srcTri, dstTri);
+    ctx.beginPath();
+    ctx.moveTo(dstTri[0][0], dstTri[0][1]); ctx.lineTo(dstTri[1][0], dstTri[1][1]); ctx.lineTo(dstTri[2][0], dstTri[2][1]);
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(60,50,40,.30)'; ctx.lineWidth = 1.2; ctx.stroke();
+  });
+  // 外周
+  if (openT < 0.02) {
+    ctx.beginPath();
+    hexOutline(state.variant, face).forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p[0] * sc, p[1] * sc); else ctx.lineTo(p[0] * sc, p[1] * sc);
+    });
+    ctx.closePath(); ctx.strokeStyle = '#3a3226'; ctx.lineWidth = 3; ctx.stroke();
+  }
+  const t = currentTourEntry();
+  $('facenow').innerHTML = 'いま見えているのは <span style="color:' + FACE_COLORS[face] + '">顔' + face +
+    '</span>（' + (sim.showBottom ? '裏' : '表') + '）　／　この状態の' + (sim.showBottom ? '表' : '裏') + 'は顔' +
+    (sim.showBottom ? t.top : t.bottom);
+  // 対応表の現在行ハイライト
+  document.querySelectorAll('table.tour tr').forEach((tr, i) => {
+    if (i === sim.tourIdx + 1) tr.classList.add('cur'); else tr.classList.remove('cur');
+  });
+}
+// 三角形→三角形のアフィン描画（srcCanvas から切り取って dst へ）
+function drawTriImage(ctx, srcCanvas, srcTri, dstTri) {
+  const m = affineFromTris(srcTri, dstTri);
+  if (!m) return;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(dstTri[0][0], dstTri[0][1]); ctx.lineTo(dstTri[1][0], dstTri[1][1]); ctx.lineTo(dstTri[2][0], dstTri[2][1]);
+  ctx.closePath(); ctx.clip();
+  ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+  ctx.drawImage(srcCanvas, 0, 0);
+  ctx.restore();
+}
+function affineFromTris(S, D) {
+  const [s0, s1, s2] = S, [d0, d1, d2] = D;
+  const den = (s1[0] - s0[0]) * (s2[1] - s0[1]) - (s2[0] - s0[0]) * (s1[1] - s0[1]);
+  if (Math.abs(den) < 1e-9) return null;
+  const a = ((d1[0] - d0[0]) * (s2[1] - s0[1]) - (d2[0] - d0[0]) * (s1[1] - s0[1])) / den;
+  const b = ((d2[0] - d0[0]) * (s1[0] - s0[0]) - (d1[0] - d0[0]) * (s2[0] - s0[0])) / den;
+  const c = ((d1[1] - d0[1]) * (s2[1] - s0[1]) - (d2[1] - d0[1]) * (s1[1] - s0[1])) / den;
+  const d = ((d2[1] - d0[1]) * (s1[0] - s0[0]) - (d1[1] - d0[1]) * (s2[0] - s0[0])) / den;
+  const e = d0[0] - a * s0[0] - b * s0[1];
+  const f = d0[1] - c * s0[0] - d * s0[1];
+  return [a, c, b, d, e, f]; // canvas setTransform(a,b,c,d,e,f) の並びに変換
+}
+function animateFlex(next) {
+  if (sim.anim) return;
+  sim.anim = 1;
+  const t0 = performance.now(), dur = 720;
+  function step(now) {
+    const t = Math.min(1, (now - t0) / dur);
+    if (t < 0.5) {
+      drawSim(easeInOut(t * 2));
+      sim.anim = 1;
+    } else {
+      if (sim.anim === 1) { next(); sim.anim = 2; }
+      drawSim(1 - easeInOut((t - 0.5) * 2));
+    }
+    if (t < 1) requestAnimationFrame(step);
+    else { sim.anim = 0; drawSim(0); }
+  }
+  requestAnimationFrame(step);
+}
+function easeInOut(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+function buildTourTable() {
+  const v = state.variant;
+  const tour = FLEXDATA[v].tour;
+  let html = '<table class="tour"><tr><th>状態</th><th>表の顔</th><th>裏の顔</th><th>表の顔を作る三角形（帯の番号）</th></tr>';
+  tour.forEach((t, i) => {
+    html += '<tr><td>' + (i + 1) + '</td><td>顔' + t.top + '</td><td>顔' + t.bottom + '</td><td>' +
+      t.topPieces.map(p => p + 1).join('・') + '</td></tr>';
+  });
+  html += '</table>';
+  if (v === 'hexa') {
+    html += '<p class="note">顔1・顔2は最初の組み立てですぐ現れます。顔3はめくり続けると出てきますが、顔4・5・6は中心を少し強くつまみ出すように開くと現れる「隠れた顔」です。</p>';
+  }
+  $('tourtable').innerHTML = html;
+}
+
+/* ---------- 型紙 ---------- */
+const TMPL_W = 3508, TMPL_H = 2480;
+const TMPL_S = { tri: 545, hexa: 312 };
+let lastTemplate = null; // {variant, canvas, s, bandX, bandY, ht}
+function bandPos(variant, side, latPt, geo) {
+  const x = geo.bandX + (latPt[0] + latPt[1] / 2) * geo.s;
+  const y = side === 'F' ? geo.bandY + geo.ht - latPt[1] * geo.ht
+                         : geo.bandY + geo.ht + latPt[1] * geo.ht;
+  return [x, y];
+}
+function templateTri(variant, piece, side, geo) {
+  return stripTri(piece).map(p => bandPos(variant, side, p, geo));
+}
+function buildTemplate() {
+  const v = state.variant;
+  const data = FLEXDATA[v];
+  const s = TMPL_S[v], ht = s * SQ3;
+  const bandW = ((data.n + 1) / 2) * s;
+  const geo = { s, ht, bandX: (TMPL_W - bandW) / 2, bandY: v === 'tri' ? 620 : 700 };
+  const cv = $('tmplcanvas');
+  const ctx = cv.getContext('2d');
+  const overlay = !window.__flexNoOverlay; // 検証時は目印類を描かない
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, TMPL_W, TMPL_H);
+  // タイトル
+  ctx.fillStyle = '#3a3226'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.font = 'bold 92px sans-serif';
+  ctx.fillText('ヘキサフレキサゴン型紙 ― ' + (v === 'tri' ? 'トリヘキサ（顔3つ）' : 'ヘキサヘキサ（顔6つ）'), 120, 170);
+  ctx.font = '52px sans-serif'; ctx.fillStyle = '#7a6c52';
+  ctx.fillText('三角形の一辺 約' + Math.round(s / 300 * 25.4) + 'mm ／ 外周の太線で切り取り、中心線で折って貼り合わせてから折ります', 120, 260);
+  // 5cm較正線
+  const calX = TMPL_W - 120 - 591, calY = 130;
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 10;
+  ctx.beginPath(); ctx.moveTo(calX, calY); ctx.lineTo(calX + 591, calY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(calX, calY - 26); ctx.lineTo(calX, calY + 26); ctx.moveTo(calX + 591, calY - 26); ctx.lineTo(calX + 591, calY + 26); ctx.stroke();
+  ctx.fillStyle = '#000'; ctx.font = 'bold 54px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('5cm', calX + 295, calY - 44);
+  ctx.textAlign = 'left';
+  const s2f = sideToFace(v);
+  // 下地（白）→ 絵柄／のりしろ
+  for (const side of ['F', 'B']) {
+    for (let k = 0; k < data.n; k++) {
+      const dst = templateTri(v, k, side, geo);
+      ctx.beginPath();
+      ctx.moveTo(dst[0][0], dst[0][1]); ctx.lineTo(dst[1][0], dst[1][1]); ctx.lineTo(dst[2][0], dst[2][1]);
+      ctx.closePath(); ctx.fillStyle = '#fff'; ctx.fill();
+    }
+  }
+  for (const side of ['F', 'B']) {
+    for (let k = 0; k < data.n; k++) {
+      const dst = templateTri(v, k, side, geo);
+      const hit = s2f[k + side];
+      if (hit) {
+        const sec = faceSectors(v, hit.face).find(x => x.piece === k && x.side === side);
+        drawTriImage(ctx, renderFaceCanvas(v, hit.face), sec.pts, dst);
+      } else {
+        // のりしろ
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(dst[0][0], dst[0][1]); ctx.lineTo(dst[1][0], dst[1][1]); ctx.lineTo(dst[2][0], dst[2][1]);
+        ctx.closePath(); ctx.clip();
+        ctx.fillStyle = '#f6ecd4'; ctx.fillRect(geo.bandX - 10, geo.bandY - 10, ((data.n + 1) / 2) * s + 20, ht * 2 + 20);
+        ctx.strokeStyle = 'rgba(160,120,60,.45)'; ctx.lineWidth = 3;
+        const cxm = Math.min(dst[0][0], dst[1][0], dst[2][0]) - s, cxM = Math.max(dst[0][0], dst[1][0], dst[2][0]) + s;
+        const cym = Math.min(dst[0][1], dst[1][1], dst[2][1]) - s, cyM = Math.max(dst[0][1], dst[1][1], dst[2][1]) + s;
+        for (let x = cxm; x < cxM; x += 46) {
+          ctx.beginPath(); ctx.moveTo(x, cym); ctx.lineTo(x + (cyM - cym), cyM); ctx.stroke();
+        }
+        ctx.restore();
+        const cen = triCentroid(dst);
+        ctx.save();
+        ctx.translate(cen[0], cen[1]);
+        if (side === 'B') ctx.rotate(Math.PI);
+        ctx.fillStyle = '#8a6a30'; ctx.font = 'bold ' + Math.round(s * 0.16) + 'px sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('のりしろ', 0, 0);
+        ctx.restore();
+      }
+    }
+  }
+  // 三角形の輪郭
+  if (overlay) ctx.strokeStyle = 'rgba(90,80,60,.55)'; else ctx.strokeStyle = 'rgba(90,80,60,0)'; ctx.lineWidth = 2.5;
+  for (const side of ['F', 'B']) {
+    for (let k = 0; k < data.n; k++) {
+      const dst = templateTri(v, k, side, geo);
+      ctx.beginPath();
+      ctx.moveTo(dst[0][0], dst[0][1]); ctx.lineTo(dst[1][0], dst[1][1]); ctx.lineTo(dst[2][0], dst[2][1]);
+      ctx.closePath(); ctx.stroke();
+    }
+  }
+  // 外周（切り取り線）
+  const edgeCount = {};
+  const edgePts = {};
+  function addEdge(p, q) {
+    const key = p.map(Math.round).join(',') + '|' + q.map(Math.round).join(',');
+    const rkey = q.map(Math.round).join(',') + '|' + p.map(Math.round).join(',');
+    if (edgeCount[rkey]) { edgeCount[rkey]++; return; }
+    edgeCount[key] = (edgeCount[key] || 0) + 1; edgePts[key] = [p, q];
+  }
+  for (const side of ['F', 'B']) {
+    for (let k = 0; k < data.n; k++) {
+      const dst = templateTri(v, k, side, geo);
+      addEdge(dst[0], dst[1]); addEdge(dst[1], dst[2]); addEdge(dst[2], dst[0]);
+    }
+  }
+  ctx.strokeStyle = overlay ? '#333' : 'rgba(0,0,0,0)'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+  Object.keys(edgeCount).forEach(key => {
+    if (edgeCount[key] === 1) {
+      const [p, q] = edgePts[key];
+      ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke();
+    }
+  });
+  // 中心線
+  if (overlay) {
+  ctx.strokeStyle = '#3f7fbf'; ctx.lineWidth = 4; ctx.setLineDash([26, 18]);
+  ctx.beginPath(); ctx.moveTo(geo.bandX - 30, geo.bandY + ht); ctx.lineTo(geo.bandX + bandW + 30, geo.bandY + ht); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#3f7fbf'; ctx.font = 'bold 46px sans-serif';
+  ctx.fillText('中心線：下の段を後ろへ折って、内側同士を貼り合わせる', geo.bandX, geo.bandY + ht * 2 + 92);
+  }
+  // 折り目（ヒンジ）の強調
+  function hingePts(k, side) {
+    const a = stripTri(k), b = stripTri(k + 1);
+    const shared = a.filter(p => b.some(q => q[0] === p[0] && q[1] === p[1]));
+    return shared.map(p => bandPos(v, side, p, geo));
+  }
+  const boldHinges = v === 'tri' ? [2, 5, 8] : [0, 6, 12];
+  if (v === 'hexa') {
+    // ペア折りの目印（裏面の奇数ヒンジ）
+    ctx.strokeStyle = 'rgba(63,127,191,.75)'; ctx.lineWidth = 10;
+    for (let k = 1; k < data.n - 1; k += 2) {
+      const pts = hingePts(k, 'B');
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[1][0], pts[1][1]); ctx.stroke();
+    }
+  }
+  if (overlay) boldHinges.forEach((k, i) => {
+    const pts = hingePts(k, 'F');
+    ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 12; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[1][0], pts[1][1]); ctx.stroke();
+    const mx = (pts[0][0] + pts[1][0]) / 2, my = (pts[0][1] + pts[1][1]) / 2;
+    ctx.beginPath(); ctx.fillStyle = '#c0392b';
+    ctx.arc(mx, my - s * 0.52, s * 0.14, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.round(s * 0.19) + 'px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(i + 1), mx, my - s * 0.52 + 2);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  });
+  // 数字ラベル
+  if (overlay) for (const side of ['F', 'B']) {
+    for (let k = 0; k < data.n; k++) {
+      const lab = (side === 'F' ? data.labels.front : data.labels.back)[k];
+      if (lab === 'G') continue;
+      const dst = templateTri(v, k, side, geo);
+      const cen = triCentroid(dst);
+      ctx.save();
+      ctx.translate(cen[0], cen[1] + (side === 'F' ? -s * 0.05 : s * 0.05));
+      if (side === 'B') ctx.rotate(Math.PI);
+      ctx.fillStyle = 'rgba(255,255,255,.75)';
+      const r = s * 0.13;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(40,32,20,.85)'; ctx.font = 'bold ' + Math.round(s * 0.17) + 'px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(lab), 0, 2);
+      ctx.restore();
+    }
+  }
+  // 下部メモ
+  ctx.fillStyle = '#7a6c52'; ctx.font = '50px sans-serif';
+  const memo = v === 'tri'
+    ? '数字は折るための目印です。赤い折り目①→②→③の順に、右側を裏側へ折り返し、最後に「のりしろ」同士を貼ります。'
+    : '数字は折るための目印です。裏面で同じ数字同士（4-4、5-5、6-6）を合わせるように畳み、赤い折り目①→②→③で六角形にし、「のりしろ」同士を貼ります。';
+  ctx.fillText(memo, 120, TMPL_H - 120);
+  lastTemplate = { variant: v, canvas: cv, geo };
+  state.tmplDirty = false;
+  return cv;
+}
+function triCentroid(t) {
+  return [(t[0][0] + t[1][0] + t[2][0]) / 3, (t[0][1] + t[1][1] + t[2][1]) / 3];
+}
+let tmplTimer = null;
+function drawTemplateSoon() {
+  if (tmplTimer) clearTimeout(tmplTimer);
+  tmplTimer = setTimeout(() => { if (state.tmplDirty) buildTemplate(); }, 80);
+}
+
+/* ---------- 説明書 ---------- */
+function buildManual() {
+  const v = state.variant;
+  let html = '';
+  if (v === 'tri') {
+    html += '<h3>作り方（トリヘキサフレキサゴン）</h3><ol>' +
+      '<li>型紙を、外周の太線に沿って切り取ります。</li>' +
+      '<li>中心線（青い破線）で「下の段を後ろへ」折り、内側（印刷のない面）同士を糊で貼り合わせます。1本の帯になり、表には「3・1・1・2・2・3・3・1・1・2」、裏には別の数字が並びます。裏の数字は逆さに印刷してありますが、貼り合わせると正しく読めます。</li>' +
+      '<li>数字の面を上にして置きます。赤い折り目が3か所（①②③）あります。①から順に、右側の部分を「裏側へ潜らせるように」折り返します（上から被せるのではなく、下へ回すのがコツです）。</li>' +
+      '<li>表が全部「1」になれば成功です。重なって向かい合った白い「のりしろ」同士を糊付けします（めくれる部分を塞がないよう、のりしろ以外には糊を付けないでください）。乾いたら完成です。</li></ol>';
+  } else {
+    html += '<h3>作り方（ヘキサヘキサフレキサゴン）</h3><ol>' +
+      '<li>型紙を、外周の太線に沿って切り取ります。</li>' +
+      '<li>中心線（青い破線）で「下の段を後ろへ」折り、内側同士を糊で貼り合わせます。1本の帯になり、表は「1・2・3」の繰り返し、裏は「4・4、5・5、6・6」の繰り返しになります。裏の数字は、貼り合わせると正しく読めるよう逆さに印刷してあります。</li>' +
+      '<li>裏面（4・5・6の面）を上にして、左端から「同じ数字同士が向かい合うように」折っていきます。4と4、5と5、6と6…と、青い線のところで順に畳んでいくと、10枚重なった短い帯になります（外側には1・2・3だけが見える状態です）。</li>' +
+      '<li>短い帯を、赤い折り目①→②→③の順に、右側を裏側へ折り返して六角形にします（トリヘキサと同じ要領です）。</li>' +
+      '<li>表が全部「1」、裏が全部「2」になれば成功です。白い「のりしろ」同士を糊付けして完成です。</li></ol>';
+  }
+  html += '<h3>めくり方</h3><ul>' +
+    '<li>隣り合う2つの三角形を、両手の指で同時につまみます。</li>' +
+    '<li>反対側から中心を軽く押し出すようにすると、中心が花のように開いて、次の顔が現れます。</li>' +
+    '<li>開きにくいときは無理をせず、つまむ位置を1つずらして試してください。紙が馴染むと、だんだんスムーズにめくれるようになります。</li>' +
+    (v === 'hexa' ? '<li>顔4・5・6は「隠れた顔」です。つまむ位置を変えながら、中心を少し強めに押し開くようにすると現れます。出てこなくても故障ではありません。何度か位置を変えて試すのがコツです。</li>' : '') +
+    '</ul>' +
+    '<h3>遊び方</h3><ul>' +
+    '<li>「次はどの顔が出るかな？」と当てるクイズに。</li>' +
+    '<li>顔ごとに写真を変えて、家族のアルバムやプレゼントに。</li>' +
+    '<li>絵柄を自分で描いて、世界に1つのフレキサゴンに。型紙の絵柄の代わりに、印刷した帯へ直接描いても楽しめます。</li></ul>' +
+    '<h3>うまくいかないとき</h3><ul>' +
+    '<li>顔の絵がそろわないときは、折る向き（裏側へ潜らせる）が逆になっていないか、作り方の手順を確認してください。</li>' +
+    '<li>印刷がずれる・大きさが違うときは、印刷設定が「実際のサイズ（100%）」になっているか、5cmの線で確かめてください。</li></ul>';
+  $('manual-body').innerHTML = html;
+  $('tmplnote').textContent = v === 'tri'
+    ? 'トリヘキサフレキサゴンの型紙です（A4判・横向き）。絵柄と数字は折り方に合わせて自動で配置されています。'
+    : 'ヘキサヘキサフレキサゴンの型紙です（A4判・横向き）。絵柄と数字は折り方に合わせて自動で配置されています。';
+}
+
+/* ---------- 初期化 ---------- */
+function switchVariant(v) {
+  state.variant = v;
+  $('tab-tri').classList.toggle('on', v === 'tri');
+  $('tab-hexa').classList.toggle('on', v === 'hexa');
+  sim.tourIdx = 0; sim.showBottom = false;
+  buildFaceEditors();
+  buildTourTable();
+  buildManual();
+  buildTemplate();
+  drawSim(0);
+}
+function init() {
+  $('tab-tri').addEventListener('click', () => switchVariant('tri'));
+  $('tab-hexa').addEventListener('click', () => switchVariant('hexa'));
+  $('btn-flex').addEventListener('click', () => {
+    animateFlex(() => {
+      sim.tourIdx = (sim.tourIdx + 1) % FLEXDATA[state.variant].tour.length;
+      sim.showBottom = false;
+    });
+  });
+  $('btn-flip').addEventListener('click', () => {
+    animateFlex(() => { sim.showBottom = !sim.showBottom; });
+  });
+  $('btn-reset').addEventListener('click', () => {
+    sim.tourIdx = 0; sim.showBottom = false; drawSim(0);
+  });
+  $('btn-download').addEventListener('click', () => {
+    const cv = buildTemplate();
+    cv.toBlob(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = state.variant === 'tri' ? 'hexaflexagon-tri-A4.png' : 'hexaflexagon-hexa-A4.png';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }, 'image/png');
+  });
+  switchVariant('tri');
+  window.__flexBooted = true;
+  clearTimeout(window.__flexBootTimer);
+}
+/* 検証用フック */
+window.__flex = {
+  FLEXDATA, stripTri, faceSectors, faceFrame, renderFaceCanvas, buildTemplate,
+  getTemplate: () => lastTemplate,
+  setVariant: v => switchVariant(v),
+  setDesign: (variant, face, design, palette) => {
+    const cfg = faceCfg(variant, face);
+    cfg.design = design; cfg.palette = palette; cfg.photo = null;
+    renderFaceCanvas(variant, face);
+  },
+  // 型紙キャンバスから顔を組み立て直す（検証用）
+  assemble: (variant, face) => {
+    const t = lastTemplate;
+    if (!t || t.variant !== variant) throw new Error('template not built for ' + variant);
+    const out = document.createElement('canvas');
+    out.width = out.height = FACE_PX;
+    const ctx = out.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, FACE_PX, FACE_PX);
+    const s2f = sideToFace(variant);
+    faceSectors(variant, face).forEach(sec => {
+      const dst = templateTri(variant, sec.piece, sec.side, t.geo);
+      drawTriImage(ctx, t.canvas, dst, sec.pts);
+    });
+    return out;
+  }
+};
+init();
+
+</script>
+</body>
+</html>
